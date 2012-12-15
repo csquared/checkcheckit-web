@@ -8,7 +8,7 @@ script(type='text/javascript')
 
     socket.on('check', function(step){
       console.log("check", step)
-      $('#' + step).attr('checked', true)
+      $('#' + step).attr('checked', true).attr('disabled', true)
     })
   })
 h1(id='list', data-id=list_id)= list.name
