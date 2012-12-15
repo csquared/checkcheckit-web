@@ -1,0 +1,5 @@
+body { font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; }
+a { color: #00B7FF; }
+dl dt{ font-size: 2em; padding-bottom: 10px; }
+
+dl dt input[type="checkbox"] { height: 2em };

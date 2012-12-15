@@ -1,0 +1,9 @@
+h1= list.name
+
+form
+  dl
+    each step,i in list.steps
+      dt
+        input(type='checkbox', id=i)
+        label(for=i)= step.name
+      dd= step.body
