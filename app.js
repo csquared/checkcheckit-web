@@ -24,6 +24,7 @@ var lists = [];
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  process.env.PORT = process.env.PORT || 3333;
 });
 
 app.configure('production', function(){
@@ -54,11 +55,11 @@ app.post('/', function(req, res){
   lists[i] = list
 
   var subject = "Start list " + list.name;
-  var message = "http://192.168.1.144:3000/" + i
+  var message = "http://192.168.1.144:" + process.env.PORT + "/" + i
   mailer.send(emails, subject, message)
 
   res.send(200, i)
 })
 
-app.listen(3000);
+app.listen(process.env.PORT);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

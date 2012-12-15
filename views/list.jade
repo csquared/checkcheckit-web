@@ -6,4 +6,6 @@ form
       dt
         input(type='checkbox', id=i)
         label(for=i)= step.name
-      dd= step.body
+      dd
+        code
+          pre= step.body
