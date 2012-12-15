@@ -8,6 +8,8 @@ var mailer  = require('./mail');
 
 var app = module.exports = express.createServer();
 
+var io  = require('socket.io').listen(app);
+
 // Configuration
 
 app.configure(function(){
@@ -34,11 +36,13 @@ app.configure('production', function(){
 });
 
 app.get('/:list_id', function(req, res){
-  var list = lists[req.params.list_id]
+  var list_id = req.params.list_id
+  var list = lists[list_id]
   if(list){
     res.render('list', {
       'title': list.name,
-      'list': list
+      'list': list,
+      'list_id': list_id
     })
   }else{
     res.send(404)
@@ -52,15 +56,34 @@ app.post('/', function(req, res){
   var emails = req.param('emails')
   console.log(list)
   console.log(emails)
+  console.log(i)
 
   //TODO: store not in memory
   lists[i] = list
+  list.sockets = []
 
   var subject = "Start list " + list.name;
   var message = checkcheckit_url + '' + i
   mailer.send(emails, subject, message)
 
-  res.send(200, i)
+  res.json(i)
+})
+
+io.sockets.on('connection', function(socket) {
+  socket.on('register', function(data) {
+    console.log("register", data.list_id)
+    lists[parseInt(data.list_id)].sockets.push(socket)
+  })
+
+  socket.on('check', function(args) {
+    var list_id = args[0]
+    var step_id = args[1]
+    console.log(list_id, step_id)
+    var list = lists[parseInt(list_id)]
+    list.sockets.forEach(function(socket){
+      socket.emit('check', step_id)
+    })
+  })
 })
 
 app.listen(process.env.PORT);
