@@ -61,7 +61,7 @@ app.post('/', function(req, res){
   //TODO: store not in memory
   lists[i] = list
   list.sockets = []
-  list.current_step = 0
+  list.current_step = -1
 
   var subject = "Start list " + list.name;
   var message = checkcheckit_url + '' + i
