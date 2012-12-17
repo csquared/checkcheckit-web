@@ -5,8 +5,9 @@ function check_step(step){
 
 $(function() {
   var socket = io.connect();
+  var list_id = $('#list').attr('data-id');
   //register interest in the list
-  socket.emit('register', {'list_id' : $('#list').attr('data-id')})
+  socket.emit('register', {'list_id' : list_id})
 
   //setup the websocket
   socket.on('check', function(step){
@@ -19,5 +20,11 @@ $(function() {
   for(step=0; step < current_step + 1; step++){
     check_step(step)
   }
+
+  //attach listeners
+  $('input[type=checkbox]').change(function(event){
+    var step_id = $(this).attr('id')
+    socket.emit('check', {'list_id':list_id, 'step_id':step_id})
+  })
 })
 
