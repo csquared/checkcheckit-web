@@ -9,21 +9,27 @@ var mailer  = require('./mail');
 
 var app = module.exports = express.createServer();
 var io  = require('socket.io').listen(app);
-var redis = require('redis'),
-    client = redis.createClient();
+var redis = require('redis');
 
 // Configuration
-
 require('./configure').configure(app);
 
-client.on("error", function (err) {
-    console.log("Redis Error " + err);
+if (process.env.REDISTOGO_URL) {
+  var rtg   = require("url").parse(process.env.REDISTOGO_URL);
+  redis = redis.createClient(rtg.port, rtg.hostname);
+  redis.auth(rtg.auth.split(":")[1]);
+} else {
+  redis = redis.createClient();
+}
+
+redis.on("error", function (err) {
+  console.log("Redis Error " + err);
 });
 
 
 app.get('/:list_id', function(req, res){
   var list_id = req.params.list_id
-  client.get(list_id, function(err, data){
+  redis.get(list_id, function(err, data){
     if(data){
       var list = JSON.parse(data)
       res.render('list', {
@@ -52,8 +58,8 @@ app.post('/', function(req, res){
   console.log(list_id)
 
   //TODO: store not in memory
-  client.set(list_id, JSON.stringify(list))
-  client.set(list_id + '-current_step', -1)
+  redis.set(list_id, JSON.stringify(list))
+  redis.set(list_id + '-current_step', -1)
 
   var subject = "Start list " + list.name;
   var message = app.settings.url + '' + list_id
@@ -70,11 +76,11 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('check', function(data) {
     console.log(data.list_id, data.step_id)
-    client.get(data.list_id, function(err, reply){
+    redis.get(data.list_id, function(err, reply){
       if(reply){
         list = JSON.parse(reply)
         list.current_step = data.step_id
-        client.set(data.list_id, JSON.stringify(list))
+        redis.set(data.list_id, JSON.stringify(list))
         io.sockets.in(data.list_id).emit('check', data.step_id)
       }
     })

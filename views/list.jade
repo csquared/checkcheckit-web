@@ -11,7 +11,8 @@ form
         label(for=i).checkbox
           input(type='checkbox', id=i)
           = step.name
-      dd
-        pre= step.body
+      - if (step.body != '')
+        dd
+          pre= step.body
 
 script(type='text/javascript', src='/javascripts/list.js')
