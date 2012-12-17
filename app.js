@@ -27,6 +27,8 @@ redis.on("error", function (err) {
 });
 
 
+// Routes
+//
 app.get('/:list_id', function(req, res){
   var list_id = req.params.list_id
   redis.get(list_id, function(err, data){
@@ -42,8 +44,12 @@ app.get('/:list_id', function(req, res){
     }
   })
 })
-// Routes
-//
+
+app.post('/:list_id/check/:step_id', function(req, res){
+  check_step(req.params.list_id, req.params.step_id)
+  res.send(200)
+})
+
 var hexdigest = function(string){
   return crypto.createHash('sha1').update(string).digest('hex')
 }
@@ -68,6 +74,17 @@ app.post('/', function(req, res){
   res.json(list_id)
 })
 
+function check_step(list_id, step_id) {
+  redis.get(list_id, function(err, reply){
+    if(reply){
+      list = JSON.parse(reply)
+      list.checked.push(parseInt(step_id))
+      redis.set(list_id, JSON.stringify(list))
+      io.sockets.in(list_id).emit('check', step_id)
+    }
+  })
+}
+
 io.sockets.on('connection', function(socket) {
   socket.on('register', function(data) {
     console.log("register", data.list_id)
@@ -76,14 +93,7 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('check', function(data) {
     console.log(data.list_id, data.step_id)
-    redis.get(data.list_id, function(err, reply){
-      if(reply){
-        list = JSON.parse(reply)
-        list.checked.push(parseInt(data.step_id))
-        redis.set(data.list_id, JSON.stringify(list))
-        io.sockets.in(data.list_id).emit('check', data.step_id)
-      }
-    })
+    check_step(data.list_id, data.step_id)
   })
 })
 
