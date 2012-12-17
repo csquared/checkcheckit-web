@@ -12,7 +12,7 @@ var io  = require('socket.io').listen(app);
 var redis = require('redis');
 
 // Configuration
-require('./configure').configure(app);
+require('./configure').configure(app, io);
 
 if (process.env.REDISTOGO_URL) {
   var rtg   = require("url").parse(process.env.REDISTOGO_URL);

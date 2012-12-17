@@ -1,6 +1,6 @@
 var express = require('express');
 
-exports.configure = function(app) {
+exports.configure = function(app, io) {
   app.configure(function(){
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
@@ -20,5 +20,10 @@ exports.configure = function(app) {
   app.configure('production', function(){
     app.use(express.errorHandler());
     app.settings.url = 'http://checkcheckit.herokuapp.com/'
+  });
+
+  io.configure('production', function () {
+    io.set("transports", ["xhr-polling"]);
+    io.set("polling duration", 10);
   });
 }
