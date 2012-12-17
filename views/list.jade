@@ -1,16 +1,17 @@
-script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
-script(type='text/javascript', src='/socket.io/socket.io.js')
-script(type='text/javascript', src='/javascripts/list.js')
-
-h1(id='list', data-id=list_id, data-current-step=list.current_step)= list.name
-h5=new Date()
+div.row
+  div.span3
+    h2(id='list', data-id=list_id, data-current-step=list.current_step)= list.name
+  div.span4
+    h5=new Date()
 
 form
   dl
     each step,i in list.steps
       dt
-        input(type='checkbox', id=i)
-        label(for=i)= step.name
+        label(for=i).checkbox
+          input(type='checkbox', id=i)
+          = step.name
       dd
-        code
-          pre= step.body
+        pre= step.body
+
+script(type='text/javascript', src='/javascripts/list.js')

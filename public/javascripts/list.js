@@ -1,5 +1,6 @@
 function check_step(step){
   $('#' + step).attr('checked', true).attr('disabled', true)
+  $('label[for=' + step +']').addClass('done')
 }
 
 $(function() {

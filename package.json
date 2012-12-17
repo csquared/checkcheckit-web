@@ -8,6 +8,7 @@
     , "nodemailer" : "*"
     , "coffee-script" : "*"
     , "socket.io" : "*"
+    , "redis" : "*"
   },
   "engines": {
     "node": "0.8.x",
