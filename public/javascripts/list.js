@@ -16,10 +16,10 @@ $(function() {
   })
 
   //get up to speed
-  var current_step = parseInt($('#list').attr('data-current-step'))
-  for(step=0; step < current_step + 1; step++){
+  var checked_steps = JSON.parse($('#list').attr('data-checked'))
+  $.each(checked_steps, function(i, step) {
     check_step(step)
-  }
+  })
 
   //attach listeners
   $('input[type=checkbox]').change(function(event){

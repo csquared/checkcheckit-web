@@ -1,11 +1,11 @@
 div.row
   div.span3
-    h2(id='list', data-id=list_id, data-current-step=list.current_step)= list.name
+    h2= list.name
   div.span4
     h5=new Date()
 
 form
-  dl
+  dl#list(data-id=list_id, data-checked=JSON.stringify(list.checked))
     each step,i in list.steps
       dt
         label(for=i).checkbox

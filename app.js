@@ -50,16 +50,16 @@ var hexdigest = function(string){
 
 app.post('/', function(req, res){
   console.log(req.param('list'))
-  var list    = req.param('list')
-  var emails  = req.param('emails')
-  var list_id = hexdigest(list.toString() + new Date().toString())
+  var list     = req.param('list')
+  var emails   = req.param('emails')
+  var list_id  = hexdigest(list.toString() + new Date().toString())
+  list.checked = []
   console.log(list)
   console.log(emails)
   console.log(list_id)
 
   //TODO: store not in memory
   redis.set(list_id, JSON.stringify(list))
-  redis.set(list_id + '-current_step', -1)
 
   var subject = "Start list " + list.name;
   var message = app.settings.url + '' + list_id
@@ -79,7 +79,7 @@ io.sockets.on('connection', function(socket) {
     redis.get(data.list_id, function(err, reply){
       if(reply){
         list = JSON.parse(reply)
-        list.current_step = data.step_id
+        list.checked.push(parseInt(data.step_id))
         redis.set(data.list_id, JSON.stringify(list))
         io.sockets.in(data.list_id).emit('check', data.step_id)
       }
