@@ -9,6 +9,9 @@
     , "coffee-script" : "*"
     , "socket.io" : "*"
     , "redis" : "*"
+    , "mocha" : "*"
+    , "superagent" : "*"
+    , "supercouch" : "*"
   },
   "engines": {
     "node": "0.8.x",
