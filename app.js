@@ -12,26 +12,13 @@ var io  = require('socket.io').listen(app);
 var redis = require('redis');
 
 // Configuration
-require('./configure').configure(app, io);
-
-if (process.env.REDISTOGO_URL) {
-  var rtg   = require("url").parse(process.env.REDISTOGO_URL);
-  redis = redis.createClient(rtg.port, rtg.hostname);
-  redis.auth(rtg.auth.split(":")[1]);
-} else {
-  redis = redis.createClient();
-}
-
-redis.on("error", function (err) {
-  console.log("Redis Error " + err);
-});
-
+redis_client = require('./configure').configure(app, io, redis);
 
 // Routes
 //
 app.get('/:list_id', function(req, res){
   var list_id = req.params.list_id
-  redis.get(list_id, function(err, data){
+  redis_client.get(list_id, function(err, data){
     if(data){
       var list = JSON.parse(data)
       res.render('list', {
@@ -65,7 +52,7 @@ app.post('/', function(req, res){
   console.log(list_id)
 
   //TODO: store not in memory
-  redis.set(list_id, JSON.stringify(list))
+  redis_client.set(list_id, JSON.stringify(list))
 
   var subject = "Start list " + list.name;
   var message = app.settings.url + '' + list_id
@@ -74,12 +61,18 @@ app.post('/', function(req, res){
   res.json(list_id)
 })
 
+app.get('/', function(req, res){
+  res.render('index', {
+    'title' : 'Check, Check, It'
+  })
+})
+
 function check_step(list_id, step_id) {
-  redis.get(list_id, function(err, reply){
+  redis_client.get(list_id, function(err, reply){
     if(reply){
       list = JSON.parse(reply)
       list.checked.push(parseInt(step_id))
-      redis.set(list_id, JSON.stringify(list))
+      redis_client.set(list_id, JSON.stringify(list))
       io.sockets.in(list_id).emit('check', step_id)
     }
   })
