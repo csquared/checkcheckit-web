@@ -1,4 +1,5 @@
 var express = require('express');
+var redis = require('redis');
 
 exports.configure = function(app, io, redis) {
   app.configure(function(){
@@ -24,6 +25,28 @@ exports.configure = function(app, io, redis) {
 
   var RedisStore = require('socket.io/lib/stores/redis');
 
+  io.configure('production', function () {
+    io.set("transports", ["xhr-polling"]);
+    io.set("polling duration", 10);
+
+    io.set('store', new RedisStore({
+      redis    : redis
+    , redisPub : exports.createRedisClient()
+    , redisSub : exports.createRedisClient()
+    , redisClient : exports.createRedisClient()
+    }));
+  });
+
+  io.configure('development', function(){
+    io.set('store', new RedisStore({
+      redisPub : exports.createRedisClient()
+    , redisSub : exports.createRedisClient()
+    , redisClient : exports.createRedisClient()
+    }));
+  })
+}
+
+exports.createRedisClient = function(){
   var redis_client = null;
 
   //Setup Redis
@@ -40,26 +63,5 @@ exports.configure = function(app, io, redis) {
     console.log("Redis Error " + err);
   });
 
-
-  io.configure('production', function () {
-    io.set("transports", ["xhr-polling"]);
-    io.set("polling duration", 10);
-
-    io.set('store', new RedisStore({
-      redis    : redis
-    , redisPub : redis_client
-    , redisSub : redis_client
-    , redisClient : redis_client
-    }));
-  });
-
-  io.configure('development', function(){
-    io.set('store', new RedisStore({
-      redisPub : redis_client
-    , redisSub : redis_client
-    , redisClient : redis_client
-    }));
-  })
-
-  return redis_client;
+  return redis_client
 }

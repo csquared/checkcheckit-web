@@ -9,10 +9,11 @@ var mailer  = require('./mail');
 
 var app = module.exports = express.createServer();
 var io  = require('socket.io').listen(app);
-var redis = require('redis');
 
 // Configuration
-redis_client = require('./configure').configure(app, io, redis);
+var config = require('./configure');
+config.configure(app, io);
+var redis_client = config.createRedisClient()
 
 // Routes
 //
