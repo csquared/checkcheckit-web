@@ -44,15 +44,12 @@ var hexdigest = function(string){
 
 app.post('/', function(req, res){
   console.log(req.param('list'))
-  var list     = req.param('list')
   var emails   = req.param('emails')
+  var list     = req.param('list')
   var list_id  = hexdigest(list.toString() + new Date().toString())
   list.checked = []
-  console.log(list)
-  console.log(emails)
-  console.log(list_id)
+  console.log(list, emails, list_id)
 
-  //TODO: store not in memory
   redis_client.set(list_id, JSON.stringify(list))
 
   var subject = "Start list " + list.name;
@@ -60,6 +57,18 @@ app.post('/', function(req, res){
   mailer.send(emails, subject, message)
 
   res.json(list_id)
+})
+
+var listParser = require('./list')
+
+app.post('/list/new', function(req, res){
+  var list     = listParser.parse(req.param('list'))
+  var list_id  = hexdigest(list.toString() + new Date().toString())
+  list.name = req.param('name')
+
+  redis_client.set(list_id, JSON.stringify(list))
+
+  res.redirect('/' + list_id)
 })
 
 app.get('/', function(req, res){

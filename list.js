@@ -2,7 +2,9 @@ module.exports = {}
 
 module.exports.parse = function(string){
   var lines = string.split("\n")
-  var list = {};
+  var list = {
+    'checked': []
+  };
 
   var first_line = lines[0].trim();
   if(first_line[0] == '#'){
@@ -17,7 +19,7 @@ module.exports.parse = function(string){
     if( line[0] == '-'){
       //create a new step
       current_step = {
-        'title' : line.replace(/^-/,'').trim(),
+        'name' : line.replace(/^-/,'').trim(),
         'body'  : ''
       }
       steps.push(current_step)

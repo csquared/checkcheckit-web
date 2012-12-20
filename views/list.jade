@@ -12,7 +12,7 @@ form
         label(for=i).checkbox
           input(type='checkbox', id=i)
           = step.name
-      - if (step.body != '')
+      - if (step.body.trim() != '')
         dd
           pre= step.body
 
