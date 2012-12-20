@@ -30,6 +30,5 @@ module.exports.parse = function(string){
   }
 
   list.steps = steps
-
   return list
 }
