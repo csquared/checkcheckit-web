@@ -1,4 +1,5 @@
 var crypto  = require('crypto');
+var moment  = require('./public/javascripts/moment.min')
 
 module.exports = {}
 
@@ -7,6 +8,7 @@ var hexdigest = function(string){
 }
 
 module.exports.fromJSON = function(list){
+  list.start_time = moment().format('MMMM Do YYYY, h:mm:ss a')
   list.id  = hexdigest(JSON.stringify(list) + new Date().toString())
   list.checked = []
   return list

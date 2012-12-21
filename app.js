@@ -15,22 +15,6 @@ config.configure(app, io);
 var redis_client = config.createRedisClient()
 
 // Routes
-app.get('/:list_id', function(req, res){
-  var list_id = req.params.list_id
-  redis_client.get(list_id, function(err, data){
-    if(data){
-      var list = JSON.parse(data)
-      res.render('list', {
-        'title': list.name,
-        'list': list,
-        'list_id': list.id,
-      })
-    }else{
-      res.send(404)
-    }
-  })
-})
-
 app.post('/:list_id/check/:step_id', function(req, res){
   check_step(req.params.list_id, req.params.step_id)
   res.send(200)
@@ -58,6 +42,24 @@ app.get('/', function(req, res){
     'title' : 'Check, Check, It'
   })
 })
+
+app.get('/:list_id', function(req, res){
+  var list_id = req.params.list_id
+  redis_client.get(list_id, function(err, data){
+    if(data){
+      var list = JSON.parse(data)
+      res.render('list', {
+        'title': list.name,
+        'list': list
+      })
+    }else{
+      res.send(404)
+    }
+  })
+})
+
+
+// Websocket Stuff
 
 function check_step(list_id, step_id) {
   redis_client.get(list_id, function(err, reply){
