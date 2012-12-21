@@ -2,18 +2,18 @@ h1.hidden-phone Check, Check It
 
 p The easiest way to create and use a checklist
 
-h3 Make a new checklist
+p  A checklist is just a text document. Start each checkable item with a dash.   Anything beneath a step is considered instructions and will be displayed beneath.
 
-p A checklist is just a text document. Start new items with a dash (<code>-</code>).
+h4 Make a new checklist
 
 form(action='/list/new', method='POST')
   label Name
     br
-    input(type='text', name='name')
+    input(type='text', name='name', placeholder="Groceries...")
 
   label List Items
     br
-    textarea(name='list', id='list', rows='10', cols='80')
+    textarea(name='list', id='list', rows='10', cols='80', placeholder="- apples")
 
   br
 
