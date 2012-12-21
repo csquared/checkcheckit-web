@@ -1,7 +1,7 @@
 var express = require('express');
-var redis = require('redis');
+var redis   = require('redis');
 
-exports.configure = function(app, io, redis) {
+exports.configure = function(app, io) {
   app.configure(function(){
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
