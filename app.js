@@ -1,11 +1,10 @@
-
 /**
  * Module dependencies.
  */
 
-var express = require('express');
-var crypto  = require('crypto');
-var mailer  = require('./mail');
+var express    = require('express');
+var listParser = require('./list')
+var mailer     = require('./mail')
 
 var app = module.exports = express.createServer();
 var io  = require('socket.io').listen(app);
@@ -16,7 +15,6 @@ config.configure(app, io);
 var redis_client = config.createRedisClient()
 
 // Routes
-//
 app.get('/:list_id', function(req, res){
   var list_id = req.params.list_id
   redis_client.get(list_id, function(err, data){
@@ -25,7 +23,7 @@ app.get('/:list_id', function(req, res){
       res.render('list', {
         'title': list.name,
         'list': list,
-        'list_id': list_id,
+        'list_id': list.id,
       })
     }else{
       res.send(404)
@@ -38,37 +36,21 @@ app.post('/:list_id/check/:step_id', function(req, res){
   res.send(200)
 })
 
-var hexdigest = function(string){
-  return crypto.createHash('sha1').update(string).digest('hex')
-}
-
 app.post('/', function(req, res){
-  console.log(req.param('list'))
+  var list = listParser.fromJSON(req.param('list'))
+  console.log(list)
+  redis_client.set(list.id, JSON.stringify(list))
   var emails   = req.param('emails')
-  var list     = req.param('list')
-  var list_id  = hexdigest(list.toString() + new Date().toString())
-  list.checked = []
-  console.log(list, emails, list_id)
-
-  redis_client.set(list_id, JSON.stringify(list))
-
   var subject = "Start list " + list.name;
-  var message = app.settings.url + '' + list_id
+  var message = app.settings.url + '' + list.id
   mailer.send(emails, subject, message)
-
-  res.json(list_id)
+  res.json(list.id)
 })
 
-var listParser = require('./list')
-
 app.post('/list/new', function(req, res){
-  var list     = listParser.parse(req.param('list'))
-  var list_id  = hexdigest(list.toString() + new Date().toString())
-  list.name = req.param('name')
-
-  redis_client.set(list_id, JSON.stringify(list))
-
-  res.redirect('/' + list_id)
+  var list  = listParser.parse(req.param('list'), req.param('name'))
+  redis_client.set(list.id, JSON.stringify(list))
+  res.redirect('/' + list.id)
 })
 
 app.get('/', function(req, res){

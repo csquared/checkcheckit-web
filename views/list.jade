@@ -6,7 +6,7 @@ div.row
 hr
 
 form
-  dl#list(data-id=list_id, data-checked=JSON.stringify(list.checked))
+  dl#list(data-id=list.id, data-checked=JSON.stringify(list.checked))
     each step,i in list.steps
       dt
         label(for=i).checkbox

@@ -1,10 +1,20 @@
+var crypto  = require('crypto');
+
 module.exports = {}
 
-module.exports.parse = function(string){
+var hexdigest = function(string){
+  return crypto.createHash('sha1').update(string).digest('hex')
+}
+
+module.exports.fromJSON = function(list){
+  list.id  = hexdigest(JSON.stringify(list) + new Date().toString())
+  list.checked = []
+  return list
+}
+
+module.exports.parse = function(string, name){
   var lines = string.split("\n")
-  var list = {
-    'checked': []
-  };
+  var list = { name: name }
 
   var first_line = lines[0].trim();
   if(first_line[0] == '#'){
@@ -32,5 +42,6 @@ module.exports.parse = function(string){
   }
 
   list.steps = steps
-  return list
+  return module.exports.fromJSON(list)
 }
+
