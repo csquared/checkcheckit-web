@@ -54,7 +54,6 @@ exports.createRedisClient = function(){
     var rtg   = require("url").parse(process.env.REDISTOGO_URL);
     redis_client = redis.createClient(rtg.port, rtg.hostname);
     var redis_password = rtg.auth.split(":")[1]
-    redis_client.auth(redis_password);
   } else {
     redis_client = redis.createClient();
   }
@@ -63,5 +62,8 @@ exports.createRedisClient = function(){
     console.log("Redis Error " + err);
   });
 
+  if(redis_password){
+    redis_client.auth(redis_password);
+  }
   return redis_client
 }
