@@ -31,6 +31,24 @@ app.post('/', function(req, res){
   res.json(list.id)
 })
 
+app.post('/new', function(req, res){
+  var data='';
+  req.setEncoding('utf8');
+  req.on('data', function(chunk) {
+     data += chunk;
+  });
+
+  req.on('end', function() {
+    req.body = data;
+    res.redirect('/');
+  });
+/*
+  var list  = listParser.parse(data)
+  redis_client.set(list.id, JSON.stringify(list))
+  res.redirect('/' + list.id)
+*/
+})
+
 app.post('/list/new', function(req, res){
   var list  = listParser.parse(req.param('list'), req.param('name'))
   redis_client.set(list.id, JSON.stringify(list))

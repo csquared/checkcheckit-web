@@ -26,8 +26,8 @@ exports.configure = function(app, io) {
   var RedisStore = require('socket.io/lib/stores/redis');
 
   io.configure('production', function () {
-    io.set("transports", ["xhr-polling"]);
-    io.set("polling duration", 10);
+    io.set("polling duration", process.env.POLLING_DURATION || 1);
+    io.set("transports", process.env.TRANSPORTS.split(','));
 
     io.set('store', new RedisStore({
       redis    : redis
