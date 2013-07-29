@@ -1,19 +1,22 @@
-div.row
-  div.span6
-    h2= list.name
-  div.span6
-    h5= list.start_time
-hr
+extends layout
 
-form
-  dl#list(data-id=list.id, data-checked=JSON.stringify(list.checked))
-    each step,i in list.steps
-      dt
-        label(for=i).checkbox
-          input(type='checkbox', id=i)
-          = step.name
-      - if (step.body.trim() != '')
-        dd
-          pre= step.body
+block body
+  div.row
+    div.span6
+      h2= list.name
+    div.span6
+      h5= list.start_time
+  hr
 
-script(type='text/javascript', src='/javascripts/list.js')
+  form
+    dl#list(data-id=list.id, data-checked=JSON.stringify(list.checked))
+      each step,i in list.steps
+        dt
+          label(for=i).checkbox
+            input(type='checkbox', id=i)
+            = step.name
+        - if (step.body.trim() != '')
+          dd
+            pre= step.body
+
+  script(type='text/javascript', src='/javascripts/list.js')

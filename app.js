@@ -5,9 +5,11 @@
 var express    = require('express');
 var listParser = require('./list')
 var mailer     = require('./mail')
+var http       = require('http');
 
-var app = module.exports = express.createServer();
-var io  = require('socket.io').listen(app);
+var app = module.exports = express();
+var server = http.createServer(app);
+var io  = require('socket.io').listen(server);
 
 // Configuration
 var config = require('./configure');
@@ -42,11 +44,6 @@ app.post('/new', function(req, res){
     req.body = data;
     res.redirect('/');
   });
-/*
-  var list  = listParser.parse(data)
-  redis_client.set(list.id, JSON.stringify(list))
-  res.redirect('/' + list.id)
-*/
 })
 
 app.post('/list/new', function(req, res){
@@ -102,5 +99,5 @@ io.sockets.on('connection', function(socket) {
   })
 })
 
-app.listen(process.env.PORT);
+server.listen(process.env.PORT);
 console.log("Express server listening on port %d in %s mode", process.env.PORT, app.settings.env);
