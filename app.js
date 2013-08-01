@@ -59,10 +59,10 @@ app.get('/', function(req, res){
 })
 
 app.get('/:list_id', function(req, res){
-  var list_id = req.params.list_id
+  var list_id = req.params.list_id;
   redis_client.get(list_id, function(err, data){
     if(data){
-      var list = JSON.parse(data)
+      var list = JSON.parse(data);
       res.render('list', {
         'title': list.name,
         'list': list
@@ -79,7 +79,7 @@ app.get('/:list_id', function(req, res){
 function check_step(list_id, step_id) {
   redis_client.get(list_id, function(err, reply){
     if(reply){
-      list = JSON.parse(reply)
+      var list = JSON.parse(reply)
       list.checked.push(parseInt(step_id))
       redis_client.set(list_id, JSON.stringify(list))
       io.sockets.in(list_id).emit('check', step_id)
