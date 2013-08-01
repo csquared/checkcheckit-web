@@ -30,20 +30,7 @@ app.post('/', function(req, res){
   var subject = "Start list " + list.name;
   var message = app.settings.url + '' + list.id
   mailer.send(emails, subject, message)
-  res.json(list.id)
-})
-
-app.post('/new', function(req, res){
-  var data='';
-  req.setEncoding('utf8');
-  req.on('data', function(chunk) {
-     data += chunk;
-  });
-
-  req.on('end', function() {
-    req.body = data;
-    res.redirect('/');
-  });
+  res.send(list.id)
 })
 
 app.post('/list/new', function(req, res){
