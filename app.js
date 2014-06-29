@@ -3,9 +3,10 @@
  */
 
 var express    = require('express');
+var http       = require('http');
+
 var listParser = require('./list')
 var mailer     = require('./mail')
-var http       = require('http');
 
 var app = module.exports = express();
 var server = http.createServer(app);
@@ -35,8 +36,9 @@ app.post('/', function(req, res){
 
 app.post('/list/new', function(req, res){
   var list  = listParser.parse(req.param('list'), req.param('name'))
-  redis_client.set(list.id, JSON.stringify(list))
-  res.redirect('/' + list.id)
+  redis_client.set(list.id, JSON.stringify(list), function(){
+    res.redirect('/' + list.id)
+  })
 })
 
 app.get('/', function(req, res){
@@ -74,6 +76,17 @@ function check_step(list_id, step_id) {
   })
 }
 
+function uncheck_step(list_id, step_id) {
+  redis_client.get(list_id, function(err, reply){
+    if(reply){
+      var list = JSON.parse(reply)
+      list.checked.splice(parseInt(step_id), 1)
+      redis_client.set(list_id, JSON.stringify(list))
+      io.sockets.in(list_id).emit('uncheck', step_id)
+    }
+  })
+}
+
 io.sockets.on('connection', function(socket) {
   socket.on('register', function(data) {
     console.log("register", data.list_id)
@@ -83,6 +96,11 @@ io.sockets.on('connection', function(socket) {
   socket.on('check', function(data) {
     console.log(data.list_id, data.step_id)
     check_step(data.list_id, data.step_id)
+  })
+
+  socket.on('uncheck', function(data) {
+    console.log(data.list_id, data.step_id)
+    uncheck_step(data.list_id, data.step_id)
   })
 })
 

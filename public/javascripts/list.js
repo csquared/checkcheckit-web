@@ -1,6 +1,11 @@
 function check_step(step){
-  $('#' + step).attr('checked', true).attr('disabled', true)
+  $('#' + step).attr('checked', true)
   $('label[for=' + step +']').addClass('done').addClass('text-success')
+}
+
+function uncheck_step(step){
+  $('#' + step).removeAttr('checked')
+  $('label[for=' + step +']').removeClass('done').removeClass('text-success')
 }
 
 $(function() {
@@ -15,6 +20,11 @@ $(function() {
     check_step(step)
   })
 
+  socket.on('uncheck', function(step){
+    console.log("uncheck", step)
+    uncheck_step(step)
+  })
+
   //get up to speed
   var checked_steps = JSON.parse($('#list').attr('data-checked'))
   $.each(checked_steps, function(i, step) {
@@ -24,7 +34,10 @@ $(function() {
   //attach listeners
   $('input[type=checkbox]').change(function(event){
     var step_id = $(this).attr('id')
-    socket.emit('check', {'list_id':list_id, 'step_id':step_id})
+    if($(this).is(':checked')) {
+      socket.emit('check', {'list_id':list_id, 'step_id':step_id})
+    }else{
+      socket.emit('uncheck', {'list_id':list_id, 'step_id':step_id})
+    }
   })
 })
-

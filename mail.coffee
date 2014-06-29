@@ -8,7 +8,7 @@ mailServer = mailer.createTransport 'SMTP',
 
 exports.send = (to, subject, message) ->
   options =
-    from: 'checkcheckit@checkcheckit.com'
+    from: 'bot@checkcheckit.io'
     to:   to
     subject: subject
     text: message

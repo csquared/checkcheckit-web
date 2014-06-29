@@ -7,8 +7,10 @@
     , "jade": ">= 0.0.1"
     , "nodemailer" : "*"
     , "coffee-script" : "*"
-    , "socket.io" : "*"
+    , "socket.io" : "0.9.16"
     , "redis" : "*"
-    , "mocha" : "*"
+  }
+  , "dev-dependencies" : {
+      "mocha" : "*"
   }
 }
